@@ -5,7 +5,7 @@ const PORT = 8080;
 
 
 
-const routes = require('./routes/tag.routes');
+const routes = require('./routes/index');
 app.use(cors({ origin: 'http://localhost:3000' }));
 app.use(express.json());
 app.use('/api', routes);

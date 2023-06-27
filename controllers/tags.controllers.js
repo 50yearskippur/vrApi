@@ -28,7 +28,7 @@ exports.createTag = async (req, res) => {
 
 exports.getTags = async (req, res) => {
     try {
-        const { id } = req.query;
+        const { id } = req.body;
 
         if (id) {
             // Retrieve a specific tag by ID
@@ -59,14 +59,29 @@ exports.updateTag = async (req, res) => {
     try {
         const { id, name, value } = req.body;
 
-        const query = 'UPDATE tags SET $2 = $3 WHERE id = $1';
-        const result = await pool.query(query);
+        const query = 'UPDATE tags SET ' + name + ' = $1 WHERE id = $2';
+        const values = [value, id];
 
-        console, log(result)
-        return res.status(200);
+        await pool.query(query, values);
+        res.status(200).json({ message: 'Tag updated successfully' });
 
     } catch (error) {
-        console.error('Error retrieving tags:', error);
+        console.error('Error updating tag:', error);
+        return res.status(500).json({ error: 'Internal Server Error' });
+    }
+}
+
+exports.deleteTag = async (req, res) => {
+    try {
+        const { id } = req.body;
+        console.log(req.body);
+        const query = 'DELETE FROM tags WHERE id = $1'
+
+        await pool.query(query, [id])
+        res.status(200).json({ message: 'Tag deleted successfully' });
+
+    } catch (error) {
+        console.error('Error deleting tag: ', error);
         return res.status(500).json({ error: 'Internal Server Error' });
     }
 }
