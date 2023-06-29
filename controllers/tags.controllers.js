@@ -13,11 +13,8 @@ exports.createTag = async (req, res) => {
         const query = 'INSERT INTO tags (name, description) VALUES ($1, $2) RETURNING *';
         const values = [name, description];
 
-        const client = await pool.connect();
         const result = await client.query(query, values);
         const createdTag = result.rows[0];
-
-        client.release();
 
         res.status(201).json(createdTag);
     } catch (error) {
@@ -59,10 +56,12 @@ exports.updateTag = async (req, res) => {
     try {
         const { id, name, value } = req.body;
 
-        const query = 'UPDATE tags SET ' + name + ' = $1 WHERE id = $2';
-        const values = [value, id];
+        const query = 'UPDATE tags SET ' + name + ' = $2 WHERE id = $1';
+        const values = [id, value];
+
 
         await pool.query(query, values);
+
         res.status(200).json({ message: 'Tag updated successfully' });
 
     } catch (error) {
@@ -74,10 +73,10 @@ exports.updateTag = async (req, res) => {
 exports.deleteTag = async (req, res) => {
     try {
         const { id } = req.body;
-        console.log(req.body);
         const query = 'DELETE FROM tags WHERE id = $1'
 
         await pool.query(query, [id])
+
         res.status(200).json({ message: 'Tag deleted successfully' });
 
     } catch (error) {
