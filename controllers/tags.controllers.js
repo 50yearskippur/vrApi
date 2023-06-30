@@ -56,6 +56,10 @@ exports.updateTag = async (req, res) => {
     try {
         const { id, name, value } = req.body;
 
+        if (!id) {
+            return res.status(400).json({ error: 'id is a required' });
+        }
+
         const query = 'UPDATE tags SET ' + name + ' = $2 WHERE id = $1';
         const values = [id, value];
 
