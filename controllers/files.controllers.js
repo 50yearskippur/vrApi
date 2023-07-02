@@ -67,49 +67,53 @@ exports.get = async (req, res) => {
 }
 
 exports.update = async (req, res) => {
-  try {
-    const { id } = req.query;
-    const { originalname, mimetype, buffer } = req.file;
-
-    if (!id) {
-        return res.status(400).json({ error: 'id is a required' });
-    }
-    
-    const query = 'SELECT * FROM files WHERE id = $1';
-    const result = await pool.query(query, [id]);
-    const contentId = result.rows[0].content;
-
-    const contentQuery = 'UPDATE files_content SET content = $2 WHERE id = $1';
-    const contentValues = [contentId, buffer];
-    await pool.query(contentQuery, contentValues);
-
-    const fileQuery = 'UPDATE files SET name = $1, mime_type = $2 WHERE id = $3';
-    const fileValues = [originalname, mimetype, id];
-    await pool.query(fileQuery, fileValues);
-
-    return res.status(200).json({ success: true });
-  } catch (error) {
-    console.error('Error updating files:', error);
-    return res.status(500).json({ error: 'Internal Server Error' });
-  }
-};
-
-exports.delete = async (req, res) => {
-    try{
-
+    try {
         const { id } = req.query;
-        
+        const { originalname, mimetype, buffer } = req.file;
+
+        if (!id) {
+            return res.status(400).json({ error: 'id is a required' });
+        }
+
         const query = 'SELECT * FROM files WHERE id = $1';
         const result = await pool.query(query, [id]);
         const contentId = result.rows[0].content;
-        
+
+        const contentQuery = 'UPDATE files_content SET content = $2 WHERE id = $1';
+        const contentValues = [contentId, buffer];
+        await pool.query(contentQuery, contentValues);
+
+        const fileQuery = 'UPDATE files SET name = $1, mime_type = $2 WHERE id = $3';
+        const fileValues = [originalname, mimetype, id];
+        await pool.query(fileQuery, fileValues);
+
+        return res.status(200).json({ success: true });
+    } catch (error) {
+        console.error('Error updating files:', error);
+        return res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
+
+exports.delete = async (req, res) => {
+    try {
+        const { id } = req.query;
+
+        const query = 'SELECT * FROM files WHERE id = $1';
+        const result = await pool.query(query, [id]);
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'File not found' });
+        }
+
+        const contentId = result.rows[0].content;
+
         const fileQuery = 'DELETE FROM files WHERE id = $1';
         await pool.query(fileQuery, [id]);
-        
-        const contentQuery = 'DELETE FROM flies_content WHERE id = $1';
+
+        const contentQuery = 'DELETE FROM files_content WHERE id = $1'; // Corrected the table name to "files_content"
         await pool.query(contentQuery, [contentId]);
     } catch (error) {
-        console.error('Error deleting file: ', error);
-        return res.status(500).json({error: 'Internal Server Error'})
+        console.error('Error deleting file:', error);
+        return res.status(500).json({ error: 'Internal Server Error' });
     }
 }

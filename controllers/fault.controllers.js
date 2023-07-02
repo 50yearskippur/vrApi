@@ -2,17 +2,16 @@ const pool = require('../db/db');
 
 exports.create = async (req, res) => {
     try {
-        const { name, description, imageId, estimated_time, visible } = req.body;
+        const { name, description, solution, typeId, imageId } = req.body;
 
-        const query = 'INSERT INTO games (name, description, image, estimated_time, visible) VALUES ($1, $2, $3, $4, $5) RETURNING *';
-        const values = [name, description, imageId, estimated_time, visible];
+        const query = 'INSERT INTO fault (name, description, solution, type, image) VALUES ($1, $2, $3, $4, $5)';
+        const values = [name, description, solution, typeId, imageId];
 
         const result = await pool.query(query, values);
-        const createdGame = result.rows[0];
 
-        res.status(201).json(createdGame);
+        res.status(201).json({ message: 'fault created succesfuly' })
     } catch (error) {
-        console.error('Error creating game: ', error);
+        console.error('Error creating fault: ', error);
         return res.status(500).json({ error: 'Internal Server Error' });
     }
 }
@@ -21,11 +20,11 @@ exports.get = async (req, res) => {
     try {
         const { name, value } = JSON.parse(req.query.data);
 
-        const query = 'SELECT * FROM games WHERE ' + name + ' = $1';
+        const query = 'SELECT * FROM fault WHERE ' + name + ' = $1';
         const result = await pool.query(query, [value]);
-        const games = result.rows;
+        const faults = result.rows;
 
-        res.status(201).json(games)
+        res.status(201).json(faults)
     } catch (error) {
         console.error('Error retrieving games: ', error);
         return res.status(500).json({ error: 'Internal Server Error' });
@@ -40,14 +39,14 @@ exports.update = async (req, res) => {
             return res.status(400).json({ error: 'id is a required' });
         }
 
-        const query = 'UPDATE games SET ' + name + ' = $1 WHERE id = $2';
+        const query = 'UPDATE fault SET ' + name + ' = $1 WHERE id = $2';
         const values = [value, id];
 
         await pool.query(query, values);
 
-        res.status(201).json({ message: 'Game updated successfully' });
+        res.status(201).json({ message: 'fault updated successfully' });
     } catch (error) {
-        console.error('Error updating game: ', error);
+        console.error('Error updating fault: ', error);
         return res.status(500).json({ error: 'Internal Server Error' });
     }
 }
@@ -56,13 +55,13 @@ exports.delete = async (req, res) => {
     try {
         const { id } = req.query;
 
-        const query = 'DELETE FROM games WHERE id = $1';
+        const query = 'DELETE FROM fault WHERE id = $1';
 
         await pool.query(query, [id]);
 
-        res.status(201).json({ message: 'Game deleted successfully' })
+        res.status(201).json({ message: 'fault deleted successfully' })
     } catch (error) {
-        console.error('Error deleting game: ', error);
+        console.error('Error deleting fault: ', error);
         return res.status(500).json({ message: 'Internal Server Error' })
     }
 }

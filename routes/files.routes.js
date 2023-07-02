@@ -8,5 +8,6 @@ const upload = multer({ storage }); // Create multer instance
 router.post('/create', upload.single('file'), controller.create);
 router.get('/get', controller.get);
 router.put('/update', upload.single('file'), controller.update);
+router.delete('/delete', controller.delete);
 
 module.exports = router

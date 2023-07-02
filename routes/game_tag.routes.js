@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const controller = require('../controllers/games.controllers');
+const controller = require('../controllers/game_tag.controllers');
 
 router.post('/create', controller.create);
 router.get('/get', controller.get);

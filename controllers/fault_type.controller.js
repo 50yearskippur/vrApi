@@ -48,7 +48,7 @@ exports.update = async (req, res) => {
     try {
         const { id, name, value } = req.body;
 
-        const query = 'UPDATE fault_type SET' + name + ' = $2 where id = $1';
+        const query = 'UPDATE fault_type SET ' + name + ' = $2 where id = $1';
         const values = [id, value];
 
         await pool.query(query, values);
