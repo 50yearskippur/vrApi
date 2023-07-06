@@ -7,9 +7,8 @@ exports.create = async (req, res) => {
         const query = 'INSERT INTO game_tag (game_id, tag_id) VALUES ($1, $2)';
         const values = [gameId, tagId];
 
-        const result = await pool.query(query, values);
+        await pool.query(query, values);
 
-        console.log(result);
     } catch (error) {
         console.error('Error creating game tag: ', error);
         res.status(500).json({ error: 'Internal Server Error' });

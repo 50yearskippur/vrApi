@@ -25,7 +25,7 @@ exports.get = async (req, res) => {
     try {
         const { id } = req.query;
 
-        if (id !== 'undefined') {
+        if (id) {
             const query = 'SELECT * FROM fault_type WHERE id = $1'
             const result = await pool.query(query, [id]);
             const faultTypes = result.rows;

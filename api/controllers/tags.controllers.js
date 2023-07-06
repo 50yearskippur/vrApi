@@ -13,7 +13,7 @@ exports.createTag = async (req, res) => {
         const query = 'INSERT INTO tags (name, description) VALUES ($1, $2) RETURNING *';
         const values = [name, description];
 
-        const result = await client.query(query, values);
+        const result = await pool.query(query, values);
         const createdTag = result.rows[0];
 
         res.status(201).json(createdTag);
