@@ -32,7 +32,6 @@ exports.get = async (req, res) => {
         const query = 'SELECT * FROM games WHERE ' + name + ' = $1';
         const result = await pool.query(query, [value]);
         const games = result.rows;
-
         res.status(201).json(games)
     } catch (error) {
         console.error('Error retrieving games: ', error);
