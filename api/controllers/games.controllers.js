@@ -3,10 +3,10 @@ const axios = require('axios');
 
 exports.create = async (req, res) => {
     try {
-        const { name, description, imageId, estimated_time, visible, tagsId } = req.body;
+        const { name, description, image, estimated_time, visible, tagsId } = req.body;
 
         const query = 'INSERT INTO games (name, description, image, estimated_time, visible) VALUES ($1, $2, $3, $4, $5) RETURNING *';
-        const values = [name, description, imageId, estimated_time, visible];
+        const values = [name, description, image, estimated_time, visible];
 
         const result = await pool.query(query, values);
         const createdGame = result.rows[0];
@@ -62,6 +62,8 @@ exports.update = async (req, res) => {
 exports.delete = async (req, res) => {
     try {
         const { id } = req.query;
+
+        await axios.delete(`http://localhost:8080/api/gameTags/delete?game_id=${id}`);
 
         const query = 'DELETE FROM games WHERE id = $1';
 

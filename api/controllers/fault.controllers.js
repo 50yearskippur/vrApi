@@ -2,11 +2,11 @@ const pool = require('../db/db');
 
 exports.create = async (req, res) => {
     try {
-        const { name, description, solution, typeId, imageId } = req.body;
+        const { name, description, solution, typeId, image } = req.body;
         console.log(typeId);
 
         const query = 'INSERT INTO fault (name, description, solution, type, image) VALUES ($1, $2, $3, $4, $5)';
-        const values = [name, description, solution, typeId[0], imageId];
+        const values = [name, description, solution, typeId[0], image];
 
         const result = await pool.query(query, values);
 

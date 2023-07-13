@@ -17,12 +17,11 @@ exports.create = async (req, res) => {
 
 exports.get = async (req, res) => {
     try {
-        const { name, value } = JSON.parse(req.query.data);
+        const { name, value } = req.query;
 
         const query = 'SELECT * FROM game_tag WHERE ' + name + ' =$1';
         const result = await pool.query(query, [value]);
 
-        console.log(result);
     } catch (error) {
         console.error('Error retrieving game tag: ', error);
         res.status(500).json({ error: 'Internal Server Error' });
@@ -51,11 +50,10 @@ exports.update = async (req, res) => {
 
 exports.delete = async (req, res) => {
     try {
-        const { id } = req.query;
+        const { game_id } = req.query;
 
-        const query = 'DELETE FROM game_tag WHERE id = $1';
-
-        await pool.query(query, [id]);
+        const query = 'DELETE FROM game_tag WHERE game_id = $1';
+        await pool.query(query, [game_id]);
 
         res.status(201).json({ message: 'game tag deleted successfully' })
     } catch (error) {
