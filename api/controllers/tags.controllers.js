@@ -1,4 +1,5 @@
 const pool = require('../db/db');
+const axios = require('axios');
 
 exports.createTag = async (req, res) => {
     try {
@@ -76,7 +77,10 @@ exports.updateTag = async (req, res) => {
 
 exports.deleteTag = async (req, res) => {
     try {
-        const { id } = req.body;
+        const { id } = req.query;
+
+        await axios.delete(`http://localhost:8080/api/gameTags/delete?id=${id}&type=tag_id`);
+
         const query = 'DELETE FROM tags WHERE id = $1'
 
         await pool.query(query, [id])

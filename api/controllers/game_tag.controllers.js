@@ -22,6 +22,18 @@ exports.get = async (req, res) => {
         const query = 'SELECT * FROM game_tag WHERE ' + name + ' =$1';
         const result = await pool.query(query, [value]);
 
+        if (name == 'game_id') {
+            const gameQuery = 'SELECT * FROM tags WHERE id = $1'
+            const resQuery = await pool.query(gameQuery, [result.rows[0].tag_id])
+
+            return res.status(200).json(resQuery)
+        } else {
+            const tagQuery = 'SELECT * FROM games WHERE id = $1'
+            const resQuery = await pool.query(tagQuery, [result.rows[0].game_id])
+
+            return res.status(200).json(resQuery)
+        }
+
     } catch (error) {
         console.error('Error retrieving game tag: ', error);
         res.status(500).json({ error: 'Internal Server Error' });
@@ -36,7 +48,7 @@ exports.update = async (req, res) => {
             return res.status(400).json({ error: 'id is a required' });
         }
 
-        const query = 'UPDATE games_tag SET ' + name + ' = $1 WHERE id = $2';
+        const query = 'UPDATE game_tag SET ' + name + ' = $1 WHERE game_id = $2';
         const values = [value, id];
 
         await pool.query(query, values);
@@ -50,10 +62,10 @@ exports.update = async (req, res) => {
 
 exports.delete = async (req, res) => {
     try {
-        const { game_id } = req.query;
+        const { type, id } = req.query;
 
-        const query = 'DELETE FROM game_tag WHERE game_id = $1';
-        await pool.query(query, [game_id]);
+        const query = 'DELETE FROM game_tag WHERE ' + type + ' = $1';
+        await pool.query(query, [id]);
 
         res.status(201).json({ message: 'game tag deleted successfully' })
     } catch (error) {

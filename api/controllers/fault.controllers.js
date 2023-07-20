@@ -2,13 +2,12 @@ const pool = require('../db/db');
 
 exports.create = async (req, res) => {
     try {
-        const { name, description, solution, typeId, image } = req.body;
-        console.log(typeId);
+        const { name, description, solution, type, image } = req.body;
 
         const query = 'INSERT INTO fault (name, description, solution, type, image) VALUES ($1, $2, $3, $4, $5)';
-        const values = [name, description, solution, typeId[0], image];
+        const values = [name, description, solution, type, image];
 
-        const result = await pool.query(query, values);
+        await pool.query(query, values);
 
         res.status(201).json({ message: 'fault created succesfuly' })
     } catch (error) {
@@ -19,13 +18,22 @@ exports.create = async (req, res) => {
 
 exports.get = async (req, res) => {
     try {
-        const { name, value } = JSON.parse(req.query.data);
+        const { name, value } = req.body;
 
-        const query = 'SELECT * FROM fault WHERE ' + name + ' = $1';
-        const result = await pool.query(query, [value]);
-        const faults = result.rows;
+        if (name && value) {
+            const query = 'SELECT * FROM fault WHERE ' + name + ' = $1';
+            const result = await pool.query(query, [value]);
+            const faults = result.rows;
 
-        res.status(201).json(faults)
+            res.status(201).json(faults)
+        } else {
+            const query = 'SELECT * FROM fault';
+            const result = await pool.query(query);
+            const faults = result.rows;
+
+            res.status(201).json(faults)
+        }
+
     } catch (error) {
         console.error('Error retrieving games: ', error);
         return res.status(500).json({ error: 'Internal Server Error' });

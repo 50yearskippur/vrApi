@@ -1,4 +1,5 @@
 const pool = require('../db/db');
+const axios = require('axios');
 
 exports.create = async (req, res) => {
     try {
@@ -28,8 +29,7 @@ exports.get = async (req, res) => {
         if (id) {
             const query = 'SELECT * FROM fault_type WHERE id = $1'
             const result = await pool.query(query, [id]);
-            const faultTypes = result.rows;
-
+            const faultTypes = result.rows[0];
             return res.status(200).json(faultTypes)
         } else {
             const query = 'SELECT * FROM fault_type'
@@ -64,6 +64,9 @@ exports.update = async (req, res) => {
 exports.delete = async (req, res) => {
     try {
         const { id } = req.query;
+
+        await axios.delete(`http://localhost:8080/api/faults/delete?id=${id}&type=type`);
+
         const query = 'DELETE FROM fault_type WHERE id = $1';
 
         await pool.query(query, [id]);

@@ -6,17 +6,17 @@ exports.create = async (req, res) => {
         const { name, description, image, estimated_time, visible, tagsId } = req.body;
 
         const query = 'INSERT INTO games (name, description, image, estimated_time, visible) VALUES ($1, $2, $3, $4, $5) RETURNING *';
-        const values = [name, description, image, estimated_time, visible];
+        const values = [name, description, image, estimated_time, true];
 
         const result = await pool.query(query, values);
         const createdGame = result.rows[0];
 
-        for (const tag of tagsId) {
-            await axios.post(`http://localhost:8080/api/gameTags/create`, {
-                gameId: createdGame.id,
-                tagId: tag
-            });
-        }
+        // for (const tag of tagsId) {
+        await axios.post(`http://localhost:8080/api/gameTags/create`, {
+            gameId: createdGame.id,
+            tagId: tagsId
+        });
+        // }
 
         res.status(201).json(createdGame);
     } catch (error) {
@@ -63,7 +63,7 @@ exports.delete = async (req, res) => {
     try {
         const { id } = req.query;
 
-        await axios.delete(`http://localhost:8080/api/gameTags/delete?game_id=${id}`);
+        await axios.delete(`http://localhost:8080/api/gameTags/delete?id=${id}&type=game_id`);
 
         const query = 'DELETE FROM games WHERE id = $1';
 
